@@ -21,14 +21,14 @@ def create_app():
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
     login_manager.init_app(app)
-    from app.models.models import User
+    from app.models.models import UserLogin
 
     @login_manager.user_loader
     def load_user(user_id):
         """
         @param: user_id - primary key from the User table
         """
-        return User.query.get(int(user_id))
+        return UserLogin.query.get(int(user_id))
 
     # blueprint for the auth routes
     from .auth.auth import auth as auth_blueprint
