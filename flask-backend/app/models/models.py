@@ -24,7 +24,7 @@ class UserLogin(UserMixin, db.Model):
 
 class User(db.Model):
     """
-    CLass for representing our User model
+    Class for representing our User model
     @user_id - primary key: int
     @username - username: string
     @email - email: string
@@ -114,9 +114,14 @@ class Donation(db.Model):
     """
 
     donation_id = db.Column(db.Integer, primary_key=True)
-    donor_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
+    donor_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     date = db.Column(db.DateTime)
     request_id = db.Column(db.Integer, db.ForeignKey('blood_request.blood_req_id'))
 
     def get_id(self):
         return self.donation_id
+
+    def __repr__(self):
+        return "<Donation: donation_id: {0}, donor_id: {1}, date: {2}>".format(
+            self.donation_id, self.donor_id, self.date
+        )
