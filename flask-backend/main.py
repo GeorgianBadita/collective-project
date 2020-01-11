@@ -13,13 +13,14 @@ app = create_app()
 
 @app.route("/")
 def index():
+    print(current_user)
     if current_user.is_authenticated:
         return (
             "<p>Hello, {}! You're logged in! Email: {}</p>"
             "<div><p>Google Profile Picture:</p>"
             '<img src="{}" alt="Google profile pic"></img></div>'
             '<a class="button" href="/logout">Logout</a>'.format(
-                current_user.name, current_user.email, current_user.profile_pic
+                current_user.username, current_user.email, current_user.profile_pic
             )
         )
     else:
@@ -27,4 +28,5 @@ def index():
 
 
 if __name__ == "__main__":
-    app.run(ssl_context="adhoc")
+    app.run()
+

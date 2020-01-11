@@ -4,3 +4,4 @@ run.bat
 
 #db files
 app/app.db
+migrations  

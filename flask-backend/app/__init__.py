@@ -14,7 +14,9 @@ def unauthorized():
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.get(user_id)
+    u = User.query.get(user_id)
+    print(user_id, u, "////////////////////////////////")
+    return u
 
 def create_app(config_class=Config):
     """
@@ -28,20 +30,14 @@ def create_app(config_class=Config):
     login_manager.init_app(app)
 
     migrate = Migrate(app, db)
+    migrate.init_app(app, db)
 
     from app.models.models import UserLogin
 
-    @login_manager.user_loader
-    def load_user(user_id):
-        """
-        @param: user_id - primary key from the User table
-        """
-        return UserLogin.query.get(int(user_id))
 
     # blueprint for the auth routes
     from .auth.routes import bp
     app.register_blueprint(bp)
-
 
     return app
 

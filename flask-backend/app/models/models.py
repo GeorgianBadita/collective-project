@@ -22,7 +22,7 @@ class UserLogin(UserMixin, db.Model):
         return self.id
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     """
     Class for representing our User model
     @user_id - primary key: int

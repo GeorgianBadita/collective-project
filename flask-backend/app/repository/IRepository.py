@@ -1,8 +1,9 @@
 
 class IRepository:
-    def __init__(self, validator, db_instance):
+    def __init__(self, validator, db_instance, db_table):
         self._validator = validator
         self._db_instance = db_instance
+        self._db_table = db_table
 
     def add(self, entity):
         raise NotImplementedError("Add function not implemented")

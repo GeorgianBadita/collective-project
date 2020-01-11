@@ -50,6 +50,7 @@ def login():
         redirect_uri=request.base_url + "/callback",
         scope=["openid", "email", "profile"],
     )
+
     return redirect(request_uri)
 
 
@@ -100,16 +101,15 @@ def callback():
         return "User email not available or not verified by Google.", 400
 
     # Create a user in our db with the information provided by Google
-    user = User(
-        user_id=unique_id, username=users_name, email=users_email, profile_pic=picture
-    )
+    user = User(user_id=unique_id, username=users_name, email=users_email, profile_pic=picture)
 
     # Doesn't exist? Add to database
     if not userRepository.find_one(unique_id):
         userRepository.add(user)
 
+
     # Begin user session by logging the user in
-    login_user(user)
+    print("==================================================",login_user(user))
 
     # Send user back to homepage
     return redirect('/')

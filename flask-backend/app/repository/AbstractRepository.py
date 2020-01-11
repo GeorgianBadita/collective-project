@@ -3,19 +3,19 @@ from app.repository.IRepository import IRepository
 
 class AbstractRepository(IRepository):
 
-    def __init__(self, validator, table):
-        super().__init__(validator, table)
+    def __init__(self, validator, db_instance, db_table):
+        super().__init__(validator, db_instance, db_table)
 
     def add(self, entity):
         if not self.find_one(entity.get_id()):
             self._validator.validate(entity)
             self._db_instance.session.add(entity)
-            self._db_instance.commit()
+            self._db_instance.session.commit()
             return entity
         return None
 
     def find_one(self, entity_id):
-        return self._db_instance.query.get(entity_id)
+        return self._db_table.query.get(entity_id)
 
     def update(self, entity):
         if not self.find_one(entity.get_id()):
