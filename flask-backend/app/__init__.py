@@ -12,11 +12,13 @@ login_manager = LoginManager()
 def unauthorized():
     return "You must be logged in to access this content.", 403
 
+
 @login_manager.user_loader
 def load_user(user_id):
     u = User.query.get(user_id)
     print(user_id, u, "////////////////////////////////")
     return u
+
 
 def create_app(config_class=Config):
     """
@@ -33,7 +35,6 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
 
     from app.models.models import UserLogin
-
 
     # blueprint for the auth routes
     from .auth.routes import bp

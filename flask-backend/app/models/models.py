@@ -42,9 +42,9 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(256), default='')
     email = db.Column(db.String(256), unique=True, default='')
     phone_number = db.Column(db.String(20))
-    blood_group_id = db.Column(db.Integer, db.ForeignKey('blood_group.blood_group_id'))
+    blood_group_id = db.Column(db.Integer, db.ForeignKey('blood_group.blood_group_id', use_alter=True), default=0)
     national_id = db.Column(db.String(20))
-    last_donation_id = db.Column(db.Integer, db.ForeignKey('donation.donation_id'))
+    last_donation_id = db.Column(db.Integer, db.ForeignKey('donation.donation_id', use_alter=True), nullable=True)
     diseases = db.Column(db.String(1024))
     about = db.Column(db.String(1024))
     profile_pic = db.Column(db.TEXT)
@@ -57,7 +57,6 @@ class User(UserMixin, db.Model):
         return "<User id: {0}, name: {1}>".format(
             self.user_id, self.username
         )
-
 
 
 class BloodGroup(db.Model):
@@ -90,11 +89,11 @@ class BloodRequest(db.Model):
     @user_id - user who made the request - foreign key: int
     """
     blood_req_id = db.Column(db.Integer, primary_key=True)
-    blood_group_id = db.Column(db.Integer, db.ForeignKey('blood_group.blood_group_id'))
+    blood_group_id = db.Column(db.Integer, db.ForeignKey('blood_group.blood_group_id', use_alter=True), nullable=True)
     location = db.Column(db.String(256))
     person_name = db.Column(db.String(256))
     description = db.Column(db.String(1024))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id', use_alter=True), nullable=True)
 
     def get_id(self):
         return self.blood_req_id
@@ -115,9 +114,9 @@ class Donation(db.Model):
     """
 
     donation_id = db.Column(db.Integer, primary_key=True)
-    donor_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    donor_id = db.Column(db.Integer, db.ForeignKey('user.user_id', use_alter=True), nullable=False)
     date = db.Column(db.DateTime)
-    request_id = db.Column(db.Integer, db.ForeignKey('blood_request.blood_req_id'))
+    request_id = db.Column(db.Integer, db.ForeignKey('blood_request.blood_req_id', use_alter=True), nullable=True)
 
     def get_id(self):
         return self.donation_id

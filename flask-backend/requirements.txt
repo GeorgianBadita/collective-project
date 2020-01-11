@@ -1,5 +1,6 @@
-requests==2.21.0
-Flask==1.0.2
+requests==2.22.0
+Flask==1.1.1
 oauthlib==3.0.1
-pyOpenSSL==19.0.0
+pyOpenSSL==19.1.0
 Flask-Login==0.4.1
+pytest-flask==0.15.0
