@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from app import db, User
+from app import db, UserLogin
 
 auth = Blueprint('auth', __name__)
 
@@ -17,7 +17,7 @@ def login_post():
     password = request.form.get('password')
     remember = True if request.form.get('remember') else False
 
-    user = User.query.filter_by(email=email).first()
+    user = UserLogin.query.filter_by(email=email).first()
 
     # check if user actually exists
     # take the user supplied password, hash it, and compare it to the hashed password in database
@@ -42,7 +42,7 @@ def signup_post():
     password = request.form.get('password')
     password_re = request.form.get('passwordre')
 
-    u = User.query.filter_by(email=email).first()
+    u = UserLogin.query.filter_by(email=email).first()
 
     # if the signup form is not well completed
     if u or email_re != email or password_re != password:
@@ -55,7 +55,7 @@ def signup_post():
         return redirect(url_for('auth.signup'))
 
     # create new user
-    new_user = User(username=username, email=email, password=generate_password_hash(password, method='sha256'))
+    new_user = UserLogin(username=username, email=email, password=generate_password_hash(password, method='sha256'))
 
     # add the new user
     db.session.add(new_user)
