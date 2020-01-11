@@ -1,25 +1,28 @@
 from app.auth import bp
-from main import login_manager
+from app.models.models import User
+from app import login_manager
+
 import requests
 
 import json
 import os
-import sqlite3
+
+
+from app.repository import userRepository
 
 # Third-party libraries
-from flask import Flask, redirect, request, url_for
+from flask import redirect, request
 from flask_login import (
-    LoginManager,
-    current_user,
     login_required,
     login_user,
     logout_user,
 )
+
 from oauthlib.oauth2 import WebApplicationClient
 
 
-GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
-GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID",'720659587848-6ttg5isjabdpuuivkjp4a9l6pk7hpu0m.apps.googleusercontent.com')
+GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET",'GvCYltPqXNfrTZKaCN-sWqYl')
 GOOGLE_DISCOVERY_URL = (
     "https://accounts.google.com/.well-known/openid-configuration"
 )
@@ -96,24 +99,23 @@ def callback():
     else:
         return "User email not available or not verified by Google.", 400
 
-    # Create a user in our db with the information provided
-    # by Google
-    # user = User(
-    #     id_=unique_id, name=users_name, email=users_email, profile_pic=picture
-    # )
-    #
-    # # Doesn't exist? Add to database
-    # if not User.get(unique_id):
-    #     User.create(unique_id, users_name, users_email, picture)
+    # Create a user in our db with the information provided by Google
+    user = User(
+        user_id=unique_id, username=users_name, email=users_email, profile_pic=picture
+    )
+
+    # Doesn't exist? Add to database
+    if not userRepository.find_one(unique_id):
+        userRepository.add(user)
 
     # Begin user session by logging the user in
-    #login_user(user)
+    login_user(user)
 
     # Send user back to homepage
-    return redirect(url_for("index"))
+    return redirect('/')
 
 @bp.route("/logout")
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("index"))
+    return redirect('/')

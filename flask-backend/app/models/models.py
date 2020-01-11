@@ -59,6 +59,7 @@ class User(db.Model):
         )
 
 
+
 class BloodGroup(db.Model):
     """
     Class for representing BloodGroup model

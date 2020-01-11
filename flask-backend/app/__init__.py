@@ -5,7 +5,6 @@ from app.config import Config
 from flask_login import LoginManager
 
 db = SQLAlchemy()  # our database
-
 login_manager = LoginManager()
 
 
@@ -17,20 +16,19 @@ def unauthorized():
 def load_user(user_id):
     return User.get(user_id)
 
-def create_app():
+def create_app(config_class=Config):
     """
     Function to create the application
     """
 
     app = Flask(__name__)
-    app.config.from_object(Config)
+    app.config.from_object(config_class)
 
     db.init_app(app)
+    login_manager.init_app(app)
+
     migrate = Migrate(app, db)
 
-
-
-    login_manager.init_app(app)
     from app.models.models import UserLogin
 
     @login_manager.user_loader
@@ -41,12 +39,9 @@ def create_app():
         return UserLogin.query.get(int(user_id))
 
     # blueprint for the auth routes
-    from .auth.auth import auth as auth_blueprint
-    app.register_blueprint(auth_blueprint)
+    from .auth.routes import bp
+    app.register_blueprint(bp)
 
-    # blueprint for non-auth routes
-    from .routes.routes import route as route_blueprint
-    app.register_blueprint(route_blueprint)
 
     return app
 

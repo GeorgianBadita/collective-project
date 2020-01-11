@@ -10,7 +10,7 @@ class UserValidator(Validator):
         if len(entity.username) > 256:
             return False
 
-        if not re.match(r'[\w\.-]+@[\w\.-]+(\.[\w]+)+', entity.mail):
+        if not re.match(r'[\w\.-]+@[\w\.-]+(\.[\w]+)+', entity.email):
             return False
 
         if not entity.blood_group in (1, 2, 3, 4):

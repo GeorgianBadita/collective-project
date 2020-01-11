@@ -1,4 +1,4 @@
-from app.models.repository.AbstractRepository import AbstractRepository
+from app.repository.AbstractRepository import AbstractRepository
 from app.models.models import Donation
 from app.models.validators.DonationValidator import DonationValidator
 

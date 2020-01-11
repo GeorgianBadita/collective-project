@@ -1,4 +1,4 @@
-from app.models.repository.IRepository import IRepository
+from app.repository.IRepository import IRepository
 
 
 class AbstractRepository(IRepository):
