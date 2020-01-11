@@ -54,7 +54,24 @@ class TestValidators:
         date = datetime.now() + timedelta(days=1)
         d = Donation(donor_id=1, date=date)
         donation_validator = DonationValidator()
-        donation_validator.validate(d)
+        try:
+            donation_validator.validate(d)
+            assert True
+        except MyException as e:
+            assert False
+        d = Donation(date=date)
+        try:
+            donation_validator.validate(d)
+            assert False
+        except MyException as e:
+            assert "Donor id can't be null!" in e.get_errors()
+        d = Donation(donor_id=1, date=date - timedelta(days=2))
+        try:
+            donation_validator.validate(d)
+            assert False
+        except MyException as e:
+            assert "Donations can't be done in the past!" in e.get_errors()
+            assert True
 
     def test_blood_request_validator(self):
         pass
