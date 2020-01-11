@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 import pytest
-from app.models.models import User, Donation
+from app.models.models import User, Donation, BloodGroup
 from app.models.validators.DonationValidator import DonationValidator
 from app.models.validators.Exceptions import MyException
 from app.models.validators.UserValidator import UserValidator
@@ -14,7 +14,7 @@ class TestValidators:
 
     def test_user_validator(self):
         u = User(user_id='1824121ajfh', username='gabi', email='gabi@g.com', phone_number='+40 0752823713',
-                 blood_group_id=1, national_id='19907123512', diseases='', about='', profile_pic='')
+                 blood_group_id=1, national_id='19907123512', diseases='', about='', profile_pic='', profile_setup=True)
         validator = UserValidator()
         try:
             validator.validate(u)
@@ -22,7 +22,7 @@ class TestValidators:
         except MyException as e:
             assert False
         u = User(user_id='1824121ajfh', username='gabi', email='gabig.com', phone_number='+40 0752823713',
-                 blood_group_id=1, national_id='19907123512', diseases='', about='', profile_pic='')
+                 blood_group_id=1, national_id='19907123512', diseases='', about='', profile_pic='', profile_setup=True)
         try:
             validator.validate(u)
             assert False
@@ -31,7 +31,7 @@ class TestValidators:
             assert True
 
         u = User(user_id='1824121ajfh', username='gabi', email='gabig.com', phone_number='+40 0752823713',
-                 blood_group_id=10, national_id='19907123512', diseases='', about='', profile_pic='')
+                 blood_group_id=10, national_id='19907123512', diseases='', about='', profile_pic='', profile_setup=True)
         try:
             validator.validate(u)
             assert False
@@ -41,7 +41,7 @@ class TestValidators:
             assert True
 
         u = User(user_id='1824121ajfh', username='gabi', email='gabi@g.com', phone_number='+0[752823713',
-                 blood_group_id=1, national_id='19907123512', diseases='', about='', profile_pic='')
+                 blood_group_id=1, national_id='19907123512', diseases='', about='', profile_pic='', profile_setup=True)
 
         try:
             validator.validate(u)
@@ -74,4 +74,4 @@ class TestValidators:
             assert True
 
     def test_blood_request_validator(self):
-        pass
+        b_gr = BloodGroup()
