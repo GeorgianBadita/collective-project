@@ -1,6 +1,6 @@
 #run files
-run.bat
 run.sh
+run.bat
 
-#auth files
-client_secret.json
+#db files
+app/app.db
