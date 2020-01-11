@@ -1,3 +1,6 @@
+from app.auth import bp
+from main import login_manager
+import requests
 
 import json
 import os
@@ -13,64 +16,25 @@ from flask_login import (
     logout_user,
 )
 from oauthlib.oauth2 import WebApplicationClient
-import requests
 
-# Internal imports
-from app.auth.db import init_db_command
-from app.auth.user import User
 
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
 GOOGLE_DISCOVERY_URL = (
     "https://accounts.google.com/.well-known/openid-configuration"
 )
-# Flask app setup
-app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY") or os.urandom(24)
 
-# User session management setup
-# https://flask-login.readthedocs.io/en/latest
-login_manager = LoginManager()
-login_manager.init_app(app)
-
+client = WebApplicationClient(GOOGLE_CLIENT_ID)
 
 @login_manager.unauthorized_handler
 def unauthorized():
     return "You must be logged in to access this content.", 403
 
-
-# Naive database setup
-try:
-    init_db_command()
-except sqlite3.OperationalError:
-    # Assume it's already been created
-    pass
-
-# OAuth2 client setup
-client = WebApplicationClient(GOOGLE_CLIENT_ID)
-
-# Flask-Login helper to retrieve a user from our db
-@login_manager.user_loader
-def load_user(user_id):
-    return User.get(user_id)
+def get_google_provider_cfg():
+    return requests.get(GOOGLE_DISCOVERY_URL).json()
 
 
-@app.route("/")
-def index():
-    if current_user.is_authenticated:
-        return (
-            "<p>Hello, {}! You're logged in! Email: {}</p>"
-            "<div><p>Google Profile Picture:</p>"
-            '<img src="{}" alt="Google profile pic"></img></div>'
-            '<a class="button" href="/logout">Logout</a>'.format(
-                current_user.name, current_user.email, current_user.profile_pic
-            )
-        )
-    else:
-        return '<a class="button" href="/login">Google Login</a>'
-
-
-@app.route("/login")
+@bp.route('/login')
 def login():
     # Find out what URL to hit for Google login
     google_provider_cfg = get_google_provider_cfg()
@@ -86,7 +50,7 @@ def login():
     return redirect(request_uri)
 
 
-@app.route("/login/callback")
+@bp.route("/login/callback")
 def callback():
     # Get authorization code Google sent back to you
     code = request.args.get("code")
@@ -134,31 +98,22 @@ def callback():
 
     # Create a user in our db with the information provided
     # by Google
-    user = User(
-        id_=unique_id, name=users_name, email=users_email, profile_pic=picture
-    )
-
-    # Doesn't exist? Add to database
-    if not User.get(unique_id):
-        User.create(unique_id, users_name, users_email, picture)
+    # user = User(
+    #     id_=unique_id, name=users_name, email=users_email, profile_pic=picture
+    # )
+    #
+    # # Doesn't exist? Add to database
+    # if not User.get(unique_id):
+    #     User.create(unique_id, users_name, users_email, picture)
 
     # Begin user session by logging the user in
-    login_user(user)
+    #login_user(user)
 
     # Send user back to homepage
     return redirect(url_for("index"))
 
-
-@app.route("/logout")
+@bp.route("/logout")
 @login_required
 def logout():
     logout_user()
     return redirect(url_for("index"))
-
-
-def get_google_provider_cfg():
-    return requests.get(GOOGLE_DISCOVERY_URL).json()
-
-
-if __name__ == "__main__":
-    app.run(ssl_context="adhoc")

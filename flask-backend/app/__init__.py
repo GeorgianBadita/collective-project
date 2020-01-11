@@ -6,6 +6,16 @@ from flask_login import LoginManager
 
 db = SQLAlchemy()  # our database
 
+login_manager = LoginManager()
+
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    return "You must be logged in to access this content.", 403
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.get(user_id)
 
 def create_app():
     """
@@ -18,8 +28,8 @@ def create_app():
     db.init_app(app)
     migrate = Migrate(app, db)
 
-    login_manager = LoginManager()
-    login_manager.login_view = 'auth.login'
+
+
     login_manager.init_app(app)
     from app.models.models import User
 
