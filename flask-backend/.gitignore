@@ -1,0 +1,7 @@
+#run files
+run.sh
+run.bat
+
+#db files
+app/app.db
+migrations  

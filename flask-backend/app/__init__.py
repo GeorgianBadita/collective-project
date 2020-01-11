@@ -5,38 +5,39 @@ from app.config import Config
 from flask_login import LoginManager
 
 db = SQLAlchemy()  # our database
+login_manager = LoginManager()
 
 
-def create_app():
+@login_manager.unauthorized_handler
+def unauthorized():
+    return "You must be logged in to access this content.", 403
+
+@login_manager.user_loader
+def load_user(user_id):
+    u = User.query.get(user_id)
+    print(user_id, u, "////////////////////////////////")
+    return u
+
+def create_app(config_class=Config):
     """
     Function to create the application
     """
 
     app = Flask(__name__)
-    app.config.from_object(Config)
+    app.config.from_object(config_class)
 
     db.init_app(app)
-    migrate = Migrate(app, db)
-
-    login_manager = LoginManager()
-    login_manager.login_view = 'auth.login'
     login_manager.init_app(app)
+
+    migrate = Migrate(app, db)
+    migrate.init_app(app, db)
+
     from app.models.models import UserLogin
 
-    @login_manager.user_loader
-    def load_user(user_id):
-        """
-        @param: user_id - primary key from the User table
-        """
-        return UserLogin.query.get(int(user_id))
 
     # blueprint for the auth routes
-    from .auth.auth import auth as auth_blueprint
-    app.register_blueprint(auth_blueprint)
-
-    # blueprint for non-auth routes
-    from .routes.routes import route as route_blueprint
-    app.register_blueprint(route_blueprint)
+    from .auth.routes import bp
+    app.register_blueprint(bp)
 
     return app
 
