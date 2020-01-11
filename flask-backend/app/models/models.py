@@ -39,8 +39,8 @@ class User(UserMixin, db.Model):
     @profile_setup - user's setup
     """
     user_id = db.Column(db.TEXT, primary_key=True, autoincrement=False)  # primary keys are required by SQLAlchemy
-    username = db.Column(db.String(256))
-    email = db.Column(db.String(256), unique=True)
+    username = db.Column(db.String(256), default='')
+    email = db.Column(db.String(256), unique=True, default='')
     phone_number = db.Column(db.String(20))
     blood_group_id = db.Column(db.Integer, db.ForeignKey('blood_group.blood_group_id'))
     national_id = db.Column(db.String(20))
