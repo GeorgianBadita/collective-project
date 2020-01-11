@@ -1,4 +1,3 @@
-
 import os
 
 # Third-party libraries
@@ -10,6 +9,7 @@ import requests
 from app import create_app
 
 app = create_app()
+
 
 @app.route("/")
 def index():
@@ -29,4 +29,3 @@ def index():
 
 if __name__ == "__main__":
     app.run()
-

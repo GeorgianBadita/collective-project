@@ -28,8 +28,9 @@ class AbstractRepository(IRepository):
         if not self.find_one(entity_id):
             return None
         entity = self.find_one(entity_id)
-        self._db_instance.session.delete(entity_id)
+        self._db_instance.session.delete(entity)
+        self._db_instance.session.commit()
         return entity
 
-    def find_all(self, entity):
-        return self._db_instance.query.all()
+    def find_all(self):
+        return self._db_table.query.all()

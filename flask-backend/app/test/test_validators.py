@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
 
 import pytest
-from app.models.models import User, Donation, BloodGroup, BloodRequest
+from app.models.models import User, Donation, BloodRequest
+from app.models.validators.BloodRequestValidator import BloodRequestValidator
 from app.models.validators.DonationValidator import DonationValidator
 from app.models.validators.Exceptions import MyException
 from app.models.validators.UserValidator import UserValidator
@@ -74,4 +75,17 @@ class TestValidators:
             assert True
 
     def test_blood_request_validator(self):
-        b_gr = BloodRequest()
+
+        br = BloodRequest(blood_group_id=2)
+        validator = BloodRequestValidator()
+        try:
+            validator.validate(br)
+            assert True
+        except MyException as e:
+            assert False
+        br = BloodRequest(blood_group_id=10)
+        try:
+            validator.validate(br)
+            assert False
+        except MyException as e:
+            assert True

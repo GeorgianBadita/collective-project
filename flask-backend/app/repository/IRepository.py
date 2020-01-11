@@ -17,5 +17,5 @@ class IRepository:
     def delete(self, entity_id):
         raise NotImplementedError("Delete function not implemented")
 
-    def find_all(self, entity):
+    def find_all(self):
         raise NotImplementedError("Find All function not implemented")
