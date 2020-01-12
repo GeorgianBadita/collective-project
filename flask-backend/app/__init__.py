@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from app.config import Config
 from flask_login import LoginManager
-
 db = SQLAlchemy()  # our database
 login_manager = LoginManager()
 
@@ -35,11 +34,11 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
 
     from app.models.models import UserLogin
-
     # blueprint for the auth routes
-    from .auth.routes import bp
-    app.register_blueprint(bp)
-
+    from .auth.routes import bp_auth
+    app.register_blueprint(bp_auth)
+    from .http.api import bp_api
+    app.register_blueprint(bp_api)
     return app
 
 

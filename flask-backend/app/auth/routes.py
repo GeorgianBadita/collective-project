@@ -1,4 +1,4 @@
-from app.auth import bp
+from app.auth import bp_auth
 from app.models.models import User
 from app import login_manager
 
@@ -6,7 +6,6 @@ import requests
 
 import json
 import os
-
 
 from app.repository import userRepository
 
@@ -20,24 +19,26 @@ from flask_login import (
 
 from oauthlib.oauth2 import WebApplicationClient
 
-
-GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID",'720659587848-6ttg5isjabdpuuivkjp4a9l6pk7hpu0m.apps.googleusercontent.com')
-GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET",'GvCYltPqXNfrTZKaCN-sWqYl')
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID",
+                                  '720659587848-6ttg5isjabdpuuivkjp4a9l6pk7hpu0m.apps.googleusercontent.com')
+GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", 'GvCYltPqXNfrTZKaCN-sWqYl')
 GOOGLE_DISCOVERY_URL = (
     "https://accounts.google.com/.well-known/openid-configuration"
 )
 
 client = WebApplicationClient(GOOGLE_CLIENT_ID)
 
+
 @login_manager.unauthorized_handler
 def unauthorized():
     return "You must be logged in to access this content.", 403
+
 
 def get_google_provider_cfg():
     return requests.get(GOOGLE_DISCOVERY_URL).json()
 
 
-@bp.route('/login')
+@bp_auth.route('/login')
 def login():
     # Find out what URL to hit for Google login
     google_provider_cfg = get_google_provider_cfg()
@@ -54,7 +55,7 @@ def login():
     return redirect(request_uri)
 
 
-@bp.route("/login/callback")
+@bp_auth.route("/login/callback")
 def callback():
     # Get authorization code Google sent back to you
     code = request.args.get("code")
@@ -107,14 +108,14 @@ def callback():
     if not userRepository.find_one(unique_id):
         userRepository.add(user)
 
-
     # Begin user session by logging the user in
-    print("==================================================",login_user(user))
+    print("==================================================", login_user(user))
 
     # Send user back to homepage
     return redirect('/')
 
-@bp.route("/logout")
+
+@bp_auth.route("/logout")
 @login_required
 def logout():
     logout_user()

@@ -1,14 +1,13 @@
-import os
-
 # Third-party libraries
-from flask import Flask
 from flask_login import current_user
-from oauthlib.oauth2 import WebApplicationClient
-import requests
-
+from flask_cors import CORS
 from app import create_app
+from app.test.test_utils import populate_db
 
 app = create_app()
+CORS(app)
+# with app.app_context():
+#     populate_db()
 
 
 @app.route("/")

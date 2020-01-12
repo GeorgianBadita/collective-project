@@ -103,3 +103,15 @@ def generate_random_blood_requests(count):
                                        person_name=person_name, user_id=user_id))
 
     return blood_reqs
+
+
+def parse_date(dt):
+    """
+    Function to parse a given datetime
+    :param dt: datetime string, with format (DD-MM-YYYY HH:MM:SS)
+    :return:
+    """
+    splt = dt.split(" ")
+    date = splt[0].split("-")
+    time = splt[1].split(":")
+    return datetime(int(date[2]), int(date[1]), int(date[0]), int(time[0]), int(time[1]), int(time[2]))

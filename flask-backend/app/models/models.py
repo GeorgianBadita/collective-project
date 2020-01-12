@@ -1,3 +1,5 @@
+import json
+
 from app import db
 from flask_login import UserMixin
 
@@ -58,6 +60,21 @@ class User(UserMixin, db.Model):
             self.user_id, self.username
         )
 
+    def to_map(self):
+        return {
+            "user_id": self.user_id,
+            "username": self.username,
+            "email": self.email,
+            "phone_number": self.phone_number,
+            "blood_group_id": self.blood_group_id,
+            "national_id": self.national_id,
+            "last_donation_id": self.last_donation_id,
+            "diseases": self.diseases,
+            "about": self.about,
+            "profile_pic": self.profile_pic,
+            "profile_setup": self.profile_setup
+        }
+
 
 class BloodGroup(db.Model):
     """
@@ -77,6 +94,13 @@ class BloodGroup(db.Model):
 
     def get_id(self):
         return self.blood_group_id
+
+    def to_map(self):
+        return {
+            "blood_group_id": self.blood_group_id,
+            "name": self.name,
+            "rh": self.rh
+        }
 
 
 class BloodRequest(db.Model):
@@ -103,6 +127,16 @@ class BloodRequest(db.Model):
             self.blood_req_id, self.user_id
         )
 
+    def to_map(self):
+        return {
+            "blood_req_id": self.blood_req_id,
+            "blood_group_id": self.blood_group_id,
+            "location": self.location,
+            "person_name": self.person_name,
+            "description": self.description,
+            "user_id": self.user_id
+        }
+
 
 class Donation(db.Model):
     """
@@ -125,3 +159,11 @@ class Donation(db.Model):
         return "<Donation: donation_id: {0}, donor_id: {1}, date: {2}>".format(
             self.donation_id, self.donor_id, self.date
         )
+
+    def to_map(self):
+        return {
+            "donation_id": self.donation_id,
+            "donor_id": self.donor_id,
+            "date": self.date,
+            "request_id": self.request_id
+        }
