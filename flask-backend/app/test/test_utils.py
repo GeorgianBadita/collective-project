@@ -11,6 +11,10 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 @pytest.fixture(scope='module')
 def app():
+    """
+    Function to create the test application
+    :return:
+    """
     app = Flask(__name__)
     app.config['TESTING'] = True
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -24,6 +28,10 @@ def app():
 
 
 def populate_db():
+    """
+    Function to puplate our database
+    :return: None
+    """
     u = User(user_id='18241211ajfh', username='gabii', email='gabii@g.com', phone_number='+40 0752823713',
              national_id='19907123512', diseases='asd', about='das', profile_pic='1', profile_setup=True)
     db.session.add(u)

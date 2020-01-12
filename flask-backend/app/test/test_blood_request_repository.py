@@ -5,6 +5,11 @@ from app.test.test_utils import app
 
 
 def test_blood_request_repo_add_find_one_find_all(app):
+    """
+    Function to test blood_request repository add, find_one, find_all
+    :param app: pytest fixture
+    :return: None
+    """
     repo = BloodRequestRepository()
     assert len(repo.find_all()) == 100
     added_request = repo.find_one(1)
@@ -18,6 +23,11 @@ def test_blood_request_repo_add_find_one_find_all(app):
 
 
 def test_blood_request_repo_delete(app):
+    """
+    Function to test blood_request repository delete
+    :param app: pytest fixture
+    :return: None
+    """
     repo = BloodRequestRepository()
     b = BloodRequest(blood_req_id=1241, blood_group_id=2, location="asf", description="Asda", user_id=4)
     repo.add(b)
@@ -27,7 +37,12 @@ def test_blood_request_repo_delete(app):
     assert repo.find_one(1241) is None
 
 
-def test_donation_update(app):
+def test_blood_request_repo_update(app):
+    """
+    Function to test blood_request repository update
+    :param app: pytest fixture
+    :return: None
+    """
     repo = BloodRequestRepository()
     b = BloodRequest(blood_req_id=1241, blood_group_id=2, location="asf", description="Asda", user_id=4)
     repo.add(b)

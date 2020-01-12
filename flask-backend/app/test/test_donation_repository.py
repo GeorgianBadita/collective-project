@@ -5,6 +5,11 @@ from app.test.test_utils import app
 
 
 def test_donation_repo_add_find_one_find_all(app):
+    """
+    Function to test donation repository add, find_one, find_all
+    :param app: pytest fixture
+    :return: None
+    """
     repo = DonationRepository()
     assert len(repo.find_all()) == 100
     added_donation = repo.find_one(1)
@@ -18,6 +23,11 @@ def test_donation_repo_add_find_one_find_all(app):
 
 
 def test_donation_repo_delete(app):
+    """
+    Function to test donation repository delete
+    :param app: pytest fixture
+    :return: None
+    """
     repo = DonationRepository()
     d = Donation(donation_id=5124, donor_id=1, date=datetime.now() + timedelta(days=1), request_id=5)
     repo.add(d)
@@ -28,6 +38,11 @@ def test_donation_repo_delete(app):
 
 
 def test_donation_update(app):
+    """
+    Function to test donation repository update
+    :param app: pytest fixture
+    :return: None
+    """
     repo = DonationRepository()
     d = Donation(donation_id=5124, donor_id=1, date=datetime.now() + timedelta(days=1), request_id=5)
     repo.add(d)
