@@ -52,8 +52,13 @@ class User(UserMixin, db.Model):
     profile_pic = db.Column(db.TEXT)
     profile_setup = db.Column(db.Boolean, default=False)
 
+    # donations = db.relationship('Donation', backref='donor', lazy='dynamic')
+
     def get_id(self):
         return self.user_id
+
+    def set_id(self, new_id):
+        self.user_id = new_id
 
     def __repr__(self):
         return "<User id: {0}, name: {1}>".format(
@@ -118,6 +123,7 @@ class BloodRequest(db.Model):
     person_name = db.Column(db.String(256))
     description = db.Column(db.String(1024))
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id', use_alter=True), nullable=True)
+    donations = db.relationship('Donation', backref='destination', lazy='dynamic')
 
     def get_id(self):
         return self.blood_req_id
@@ -145,12 +151,14 @@ class Donation(db.Model):
     @donor_id - foreign key: int
     @date - donation date: DateTime
     @request_id - foreign key: int
+    @accepted - flag which is false by default, true if the the donation was accepted
     """
 
     donation_id = db.Column(db.Integer, primary_key=True)
     donor_id = db.Column(db.Integer, db.ForeignKey('user.user_id', use_alter=True), nullable=False)
     date = db.Column(db.DateTime)
     request_id = db.Column(db.Integer, db.ForeignKey('blood_request.blood_req_id', use_alter=True), nullable=True)
+    accepted = db.Column(db.Boolean, default=False)
 
     def get_id(self):
         return self.donation_id
@@ -165,5 +173,6 @@ class Donation(db.Model):
             "donation_id": self.donation_id,
             "donor_id": self.donor_id,
             "date": self.date,
-            "request_id": self.request_id
+            "request_id": self.request_id,
+            "accepted": self.accepted
         }

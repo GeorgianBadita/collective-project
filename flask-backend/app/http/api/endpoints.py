@@ -1,8 +1,10 @@
+from datetime import datetime, timedelta
+
 from flask import json
 from app.http.api import bp_api
 from flask import request
 from app.utils.utils import parse_date
-from app.models.models import BloodRequest, Donation
+from app.models.models import BloodRequest, Donation, User
 from app.repository import userRepository, bloodRequestRepository, donationRepository
 
 
@@ -104,3 +106,84 @@ def add_donation():
     new_donation = Donation(donor_id=donor_id, date=date, request_id=request_id)
     donationRepository.add(new_donation)
     return json_response(new_donation.to_map(), status=200)
+
+
+"""
+    phone_number = db.Column(db.String(20))
+    blood_group_id = db.Column(db.Integer, db.ForeignKey('blood_group.blood_group_id', use_alter=True), default=0)
+    national_id = db.Column(db.String(20))
+    last_donation_id = db.Column(db.Integer, db.ForeignKey('donation.donation_id', use_alter=True), nullable=True)
+    diseases = db.Column(db.String(1024))
+    about = db.Column(db.String(1024))
+"""
+
+
+@bp_api.route("/users/profile/<user_id>", methods=['PUT'])
+def update_profile(user_id):
+    """
+    Function to update a user's profile
+    :param user_id: id of the user who updates its profile
+    :return: The updated user's profile if everything is ok,
+    error messages and 400 or 404 status code otherwise
+    """
+    # TODO: verify that the current user is editing ts own profile
+    try:
+        phone_number = request.form['phone_number']
+        blood_group_id = request.form['blood_group_id']
+        national_id = request.form['national_id']
+        last_donation_id = request.form['last_donation_id']
+        diseases = request.form['diseases']
+        about = request.form['about']
+    except KeyError:
+        return json_response({"error_message": "Missing fields!"}, status=400)
+    try:
+        blood_group_id = int(blood_group_id)
+        last_donation_id = int(last_donation_id)
+    except ValueError:
+        return json_response({"error_message": "Invalid ids!"}, status=400)
+    last_donation = donationRepository.find_one(last_donation_id)
+    if last_donation is None:
+        return json_response({"error_message": "Donation not found!"}, status=404)
+
+    user = userRepository.find_one(user_id)
+    if user is None:
+        return json_response({"error_message": "User not found!"}, status=404)
+    new_user = User(user_id=user_id, username=user.username, email=user.email, phone_number=phone_number,
+                    blood_group_id=blood_group_id, national_id=national_id, last_donation_id=last_donation_id,
+                    diseases=diseases, about=about, profile_setup=True, profile_pic=user.profile_pic)
+    userRepository.update(new_user)
+    return json_response(new_user.to_map())
+
+
+@bp_api.route("/donations/accept/<donation_id>", methods=['PUT'])
+def accept_donation(donation_id):
+    """
+    View function to accept a donation
+    :param donation_id: id of the donation to be accepted
+    :return: the accepted donation if everything works fine
+    error message and 400 or 404 status codes
+    """
+    # TODO check that the user is involved in donation
+    try:
+        donation_id = int(donation_id)
+    except ValueError:
+        return json_response({"error_message": "Invalid ids!"}, status=400)
+    donation = donationRepository.find_one(donation_id)
+    if donation is None:
+        return json_response({"error_message": "Donation not found!"})
+    blood_request_id = donation.request_id
+    if blood_request_id is not None:
+        blood_request = bloodRequestRepository.find_one(donation.request_id)
+        if blood_request is None:
+            return json_response({"error_message": "Blood request not found!"})
+        request_owner_id = blood_request.user_id
+        # TODO check that the owner_id == current_user_id
+
+    accepted_donation = Donation(donation_id=donation_id,
+                                 date=datetime.now() + timedelta(hours=1),
+                                 donor_id=donation.donor_id,
+                                 request_id=donation.request_id,
+                                 accepted=True)
+
+    donationRepository.update(accepted_donation)
+    return json_response(accepted_donation.to_map())
